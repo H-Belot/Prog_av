@@ -4,6 +4,8 @@ téléchargés depuis les pages web suivantes :
  
 https://gist.github.com/krthkj/9c1868c1f69142c2952683ea91ca2a37
 
-- Code 2 : Pi.java, Auteur : Dr. Steve Kautz, Enseignant, IOWA State University; https://faculty.sites.iastate.edu/smkautz/
+- Code 2 : Pi_base.java, Auteur : Dr. Steve Kautz, Enseignant, IOWA State University; https://faculty.sites.iastate.edu/smkautz/
 
 http://web.cs.iastate.edu/~smkautz/cs430s14/examples/thread_pool_examples/pi/Pi.java
+
+- Code Pi.java, Master.java ainsi que Worker.java ont été travaillés et séparé dans le cadre d'un tp de programmation avancée.
