@@ -1,47 +1,59 @@
-// Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
-
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-
+/**
+ * Créer des workers pour exécuter la simulation de Monte Carlo
+ * et d'agréger les résultats.
+ * Le master n'attends pas que chaque worker termine individuellement,
+ * mais lance tous les workers et attend qu'ils soient tous terminés
+ * avant de rassembler les résultats. C'est plus efficace que d'attendre, c'est assynchrone.
+ */
 class Master {
-   Master() {
-   }
+    public long doRun(int totalCount, int numWorkers) throws InterruptedException, ExecutionException // lance les workers et agrège les résultats
+    {
 
-   public long doRun(int var1, int var2) throws InterruptedException, ExecutionException {
-      long var3 = System.currentTimeMillis();
-      ArrayList var5 = new ArrayList();
+	long startTime = System.nanoTime(); // démarrage du chronomètre
 
-      for(int var6 = 0; var6 < var2; ++var6) {
-         var5.add(new Worker(var1));
-      }
+	// Créer une liste de tâches Callable qui renvoies des longs
+	List<Callable<Long>> tasks = new ArrayList<Callable<Long>>(); // création d'un arraylist de callable
+	for (int i = 0; i < numWorkers; ++i) // pour chaque worker
+	    {
+		tasks.add(new Worker(totalCount)); // instanciation d'un worker pour chaque tâche
+	    }
+    
+	// lancer les tâches et récupérer les Futures
+	ExecutorService exec = Executors.newFixedThreadPool(numWorkers); // création d'un pool (ensemble de thread) de thread fixe en fonction du nombre de worker
+	List<Future<Long>> results = exec.invokeAll(tasks); // créer une liste de future pour récupérer les résultats des tâches callable exécutées. 
+	// invokeAll lance toutes les tâches et bloque jusqu'à ce qu'elles soient terminées
+	long total = 0; // variable pour stocker le total des points dans le cercle
 
-      ExecutorService var15 = Executors.newFixedThreadPool(var2);
-      List var7 = var15.invokeAll(var5);
-      long var8 = 0L;
+	// Assemble les résultats.
+	for (Future<Long> f : results) //Parcours results et pour chaque future je regarde f 
+	    {
+		// Appelle get() pour obtenir le résultat de chaque tâche Callable
+		// get() bloque jusqu'à ce que le résultat soit disponible
+		//Les futures sont du chainage de dépendance, le master attend que les workers aient finis pour récupérer les résultats
+		total += f.get(); // on ajoute le résultat de chaque future au total pour master qui a besoin de ce total pour calculer pi
+	    }
+	double pi = 4.0 * total / totalCount / numWorkers; // calcul de pi
 
-      Future var11;
-      for(Iterator var10 = var7.iterator(); var10.hasNext(); var8 += (Long)var11.get()) {
-         var11 = (Future)var10.next();
-      }
+	long stopTime = System.nanoTime();
 
-      double var14 = 4.0 * (double)var8 / (double)var1 / (double)var2;
-      long var12 = System.currentTimeMillis();
-      System.out.println("\nPi : " + var14);
-      PrintStream var10000 = System.out;
-      double var10001 = Math.abs(var14 - Math.PI);
-      var10000.println("Error: " + var10001 / Math.PI + "\n");
-      System.out.println("Ntot: " + var1 * var2);
-      System.out.println("Available processors: " + var2);
-      System.out.println("Time Duration (ms): " + (var12 - var3) + "\n");
-      System.out.println(Math.abs(var14 - Math.PI) / Math.PI + " " + var1 * var2 + " " + var2 + " " + (var12 - var3));
-      var15.shutdown();
-      return var8;
-   }
+	System.out.println("\nPi : " + pi );
+	System.out.println("Error: " + (Math.abs((pi - Math.PI)) / Math.PI) +"\n");
+
+	System.out.println("Ntot: " + totalCount*numWorkers);
+	System.out.println("Available processors: " + numWorkers);
+	System.out.println("Time Duration (nano seconds): " + (stopTime - startTime) + "\n");
+
+	System.out.println( (Math.abs((pi - Math.PI)) / Math.PI) +" "+ totalCount*numWorkers +" "+ numWorkers +" "+ (stopTime - startTime));
+
+	exec.shutdown();
+	return total;
+    }
 }
