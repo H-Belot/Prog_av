@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 // relire et essayer de changer la taille des taches et le nombre de workers, on le fait dans le master
 
-
 /**
  * Approximates PI using the Monte Carlo method.  Demonstrates
  * use of Callables, Futures, and thread pools.
