@@ -1,8 +1,8 @@
 import java.io.*;
 import java.net.*;
 /**
- * Worker is a server. It computes PI by Monte Carlo method and sends 
- * the result to Master.
+ Worker est un serveur. Il attend les requetes du Master.
+ *il calcule localement PI par la methode de Monte Carlo et envoie
  */
 public class WorkerSocket {
     static int port = 25545; //default port

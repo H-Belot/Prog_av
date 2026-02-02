@@ -54,8 +54,8 @@ public class MasterSocket {
 	   sockets[i] = new Socket(ip, tab_port[i]);
 	   System.out.println("SOCKET = " + sockets[i]);
 	   
-	   reader[i] = new BufferedReader( new InputStreamReader(sockets[i].getInputStream()));
-	   writer[i] = new PrintWriter(new BufferedWriter(new OutputStreamWriter(sockets[i].getOutputStream())),true);
+	   reader[i] = new BufferedReader( new InputStreamReader(sockets[i].getInputStream())); // interface vers le flux d'entree du socket
+	   writer[i] = new PrintWriter(new BufferedWriter(new OutputStreamWriter(sockets[i].getOutputStream())),true); // interface vers le flux de sortie du socket
        }
 
        String message_to_send;
