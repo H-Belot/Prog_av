@@ -37,32 +37,33 @@ public class Main {
 
     public static void main(String[] args) {
 
-        int totalCount = 833_333; // total de points
-        int numWorkers = 12;
-        int nb_ex = 5;              // nombre d'expériences
+        int Ntot = 12_000_000;   // PROBLÈME FIXE
+        int numWorkers = 1;      // p = 1,2,4,6,8,...
+        int nb_ex = 5;           // répétitions
 
-        Master master = new Master(); // ✔ une seule instance suffit
+        Master master = new Master();
 
-        for (int i = 0; i < nb_ex; ++i) {
+        for (int i = 0; i < nb_ex; i++) {
 
+            int pointsParWorker = Ntot / numWorkers;
+
+            long start = System.nanoTime();
             long total;
-            long startTime = System.nanoTime();
 
             try {
-                total = master.doRun(totalCount / numWorkers, numWorkers);
-            } catch (InterruptedException | ExecutionException e) {
+                total = master.doRun(pointsParWorker, numWorkers);
+            } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
 
-            long stopTime = System.nanoTime();
-            long duration = stopTime - startTime;
+            long stop = System.nanoTime();
+            long duration = stop - start;
 
-            long nTot = totalCount;
-            double pi = 4.0 * total / nTot;
+            double pi = 4.0 * total / Ntot;
             double error = Math.abs(pi - Math.PI) / Math.PI;
 
-            writeCsv("resultats.csv", pi, error, nTot, numWorkers, duration);
+            writeCsv("resultats.csv", pi, error, Ntot, numWorkers, duration);
         }
     }
 }
