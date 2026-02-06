@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Lire le CSV
-df = pd.read_csv("resultats_speedup.csv")
+df = pd.read_csv("resultats_forte_speedup.csv")
 
 workers = df["WORKERS"]
 speedup = df["SPEEDUP"]

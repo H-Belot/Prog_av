@@ -1,17 +1,16 @@
 import java.io.*;
 import java.util.*;
 
-public class scalabilité {
+public class ScalabiliteFaible {
 
     public static void main(String[] args) {
 
-        String inputFile = "resultats.csv";
-        String outputFile = "resultats_speedup.csv";
+        String inputFile = "resultats_faible.csv";
+        String outputFile = "resultats_faible_median.csv";
 
-        // workers -> liste des temps
         Map<Integer, List<Long>> timesByWorkers = new TreeMap<>();
 
-        /* ================= LECTURE CSV ================= */
+        /* ===== LECTURE CSV ===== */
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
 
             String line = br.readLine(); // header
@@ -37,7 +36,7 @@ public class scalabilité {
             return;
         }
 
-        /* ================= MÉDIANES ================= */
+        /* ===== MÉDIANES ===== */
         Map<Integer, Long> medians = new TreeMap<>();
 
         for (Map.Entry<Integer, List<Long>> entry : timesByWorkers.entrySet()) {
@@ -46,46 +45,32 @@ public class scalabilité {
             Collections.sort(times);
 
             int n = times.size();
-            long median;
-
-            if (n % 2 == 1) {
-                median = times.get(n / 2);
-            } else {
-                median = (times.get(n / 2 - 1) + times.get(n / 2)) / 2;
-            }
+            long median = (n % 2 == 1)
+                    ? times.get(n / 2)
+                    : (times.get(n / 2 - 1) + times.get(n / 2)) / 2;
 
             medians.put(entry.getKey(), median);
         }
 
-        /* ================= SPEEDUP ================= */
-        Long t1 = medians.get(1);
+        /* ===== AFFICHAGE ===== */
+        System.out.printf("%-10s %-20s%n",
+                "WORKERS", "MEDIAN_TIME_NS");
 
-        if (t1 == null) {
-            System.err.println("ERREUR : workers=1 absent, speedup impossible");
-            return;
+        for (Map.Entry<Integer, Long> e : medians.entrySet()) {
+            System.out.printf(Locale.US,
+                    "%-10d %-20d%n",
+                    e.getKey(), e.getValue());
         }
 
-        System.out.printf("%-10s %-20s %-10s%n",
-                "WORKERS", "MEDIAN_TIME_NS", "SPEEDUP");
-
-        /* ================= ÉCRITURE CSV ================= */
+        /* ===== ÉCRITURE CSV ===== */
         try (PrintWriter pw = new PrintWriter(new FileWriter(outputFile))) {
 
-            pw.println("WORKERS,MEDIAN_DURATION_NS,SPEEDUP");
+            pw.println("WORKERS,MEDIAN_DURATION_NS");
 
             for (Map.Entry<Integer, Long> e : medians.entrySet()) {
-
-                int workers = e.getKey();
-                long medianTime = e.getValue();
-                double speedup = (double) t1 / medianTime;
-
-                System.out.printf(Locale.US,
-                        "%-10d %-20d %-10.3f%n",
-                        workers, medianTime, speedup);
-
                 pw.printf(Locale.US,
-                        "%d,%d,%.6f%n",
-                        workers, medianTime, speedup);
+                        "%d,%d%n",
+                        e.getKey(), e.getValue());
             }
 
         } catch (IOException e) {
