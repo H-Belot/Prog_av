@@ -21,10 +21,10 @@ public class WorkerSocket {
         Socket soc = s.accept();
 	
         // BufferedReader bRead for reading message from Master
-        BufferedReader bRead = new BufferedReader(new InputStreamReader(soc.getInputStream()));
+        BufferedReader bRead = new BufferedReader(new InputStreamReader(soc.getInputStream())); // interface du flux d'entree du socket côté serveur
 
         // PrintWriter pWrite for writing message to Master
-        PrintWriter pWrite = new PrintWriter(new BufferedWriter(new OutputStreamWriter(soc.getOutputStream())), true);
+        PrintWriter pWrite = new PrintWriter(new BufferedWriter(new OutputStreamWriter(soc.getOutputStream())), true); // interface du flux de sortie du socket coté serveur
 	String str;
         while (isRunning) {
 	    str = bRead.readLine();          // read message from Master
