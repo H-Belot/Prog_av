@@ -37,8 +37,8 @@ public class MainForteScal {
     // Lance la simulation de Monte Carlo pour estimer pi, mesurer le temps d'exécution et enregistrer les résultats dans un fichier CSV.
     public static void main(String[] args) {
 
-        int Ntot = 12_000_000;           // PROBLÈME FIXE
-        int[] workersList = {1, 2, 4, 6, 8, 12};
+        int Ntot = 24_000_000;           // PROBLÈME FIXE
+        int[] workersList = {1, 2, 4, 6, 8, 12,16,20};
         int nb_ex = 5;                   // répétitions
 
         Master master = new Master();
