@@ -38,7 +38,7 @@ public class MainForteScal {
     public static void main(String[] args) {
 
         int Ntot = 24_000_000;           // PROBLÈME FIXE
-        int[] workersList = {1, 2, 4, 6, 8, 12,16,20};
+        int[] workersList = {1, 2, 4, 6, 8, 12};
         int nb_ex = 5;                   // répétitions
 
         Master master = new Master();
