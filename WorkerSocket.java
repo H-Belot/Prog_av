@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Random;
 /**
  Worker est un serveur. Il attend les requetes du Master.
  *il calcule localement PI par la methode de Monte Carlo et envoie
@@ -14,8 +15,9 @@ public class WorkerSocket {
      */
     public static void main(String[] args) throws Exception {
 
-	if (!("".equals(args[0]))) port=Integer.parseInt(args[0]);
-	System.out.println(port);
+        if (args.length > 0) 
+        port=Integer.parseInt(args[0]);
+	    System.out.println(port);
         ServerSocket s = new ServerSocket(port);
         System.out.println("Server started on port " + port);
         Socket soc = s.accept();
@@ -25,22 +27,41 @@ public class WorkerSocket {
 
         // PrintWriter pWrite for writing message to Master
         PrintWriter pWrite = new PrintWriter(new BufferedWriter(new OutputStreamWriter(soc.getOutputStream())), true); // interface du flux de sortie du socket coté serveur
-	String str;
+	    String str;
         while (isRunning) {
 	    str = bRead.readLine();          // read message from Master
 	    if (!(str.equals("END"))){
 		System.out.println("Server receives totalCount = " +  str);
 		
-		// compute
-		System.out.println("TODO : compute Monte Carlo and send total");
+            // compute
+            System.out.println("TODO : compute Monte Carlo and send total");
+            long iterations = Long.parseLong(str);
+            long circleCount = calculPi(iterations);
+            System.out.println("Number of points in the circle: " + circleCount);
 
-	        pWrite.println(str);         // send number of points in quarter of disk
-	    }else{
-		isRunning=false;
+            pWrite.println(circleCount);// send number of points in quarter of disk
+	    }
+        else{
+		    isRunning=false;
 	    }	    
         }
         bRead.close();
         pWrite.close();
         soc.close();
    }
+
+    public static Long calculPi(long iterations) 
+      {
+	  long circleCount = 0;
+	  Random prng = new Random ();
+	  for (long j = 0; j < iterations ; j++) //boucle de Monte Carlo qui renvoit le nombre de points dans le cercle
+	      {
+		  double x = prng.nextDouble();
+		  double y = prng.nextDouble();
+		  if ((x * x + y * y) < 1){
+            ++circleCount; 
+          }  
+	      }
+	  return circleCount;
+      }
 }
